@@ -223,16 +223,5 @@
     }
   });
 
-  /* ---------- Profile image fallback ---------- */
-  const profileImg = document.getElementById('profileImg');
-  const photoPlaceholder = document.getElementById('photoPlaceholder');
-
-  if (profileImg) {
-    // Check if image loaded successfully
-    if (profileImg.complete && profileImg.naturalWidth === 0) {
-      profileImg.style.display = 'none';
-      photoPlaceholder.style.display = 'flex';
-    }
-  }
 
 })();
