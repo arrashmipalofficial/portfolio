@@ -171,13 +171,18 @@
 
   /* ---------- Contact Form ---------- */
   const contactForm = document.getElementById('contactForm');
+  const submitBtn = contactForm.querySelector('button[type="submit"]');
 
-  contactForm.addEventListener('submit', (e) => {
+  // Fill these in after CallMeBot registration
+  const WA_PHONE   = 'YOUR_PHONE_WITH_COUNTRY_CODE'; // e.g. 917015396272
+  const WA_APIKEY  = 'YOUR_CALLMEBOT_APIKEY';
+
+  contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const name = contactForm.name.value.trim();
-    const email = contactForm.email.value.trim();
-    const message = contactForm.message.value.trim();
+    const name    = contactForm.querySelector('[name="name"]').value.trim();
+    const email   = contactForm.querySelector('[name="email"]').value.trim();
+    const message = contactForm.querySelector('[name="message"]').value.trim();
 
     if (!name || !email || !message) {
       alert('Please fill in all fields.');
@@ -190,13 +195,32 @@
       return;
     }
 
-    // Replace with your preferred form handler (Formspree, EmailJS, etc.)
-    // For now, open the user's mail client as a fallback
-    const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-    window.location.href = `mailto:rashmipal@email.com?subject=${subject}&body=${body}`;
+    submitBtn.textContent = 'Sending…';
+    submitBtn.disabled = true;
 
-    contactForm.reset();
+    try {
+      const text = encodeURIComponent(
+        `New Portfolio Message\n\nFrom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+      );
+      const url = `https://api.callmebot.com/whatsapp.php?phone=${WA_PHONE}&text=${text}&apikey=${WA_APIKEY}`;
+
+      const res = await fetch(url);
+
+      if (res.ok) {
+        submitBtn.textContent = 'Message Sent!';
+        contactForm.reset();
+        setTimeout(() => {
+          submitBtn.textContent = 'Send Message';
+          submitBtn.disabled = false;
+        }, 4000);
+      } else {
+        throw new Error('Failed');
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      submitBtn.textContent = 'Send Message';
+      submitBtn.disabled = false;
+    }
   });
 
   /* ---------- Profile image fallback ---------- */
